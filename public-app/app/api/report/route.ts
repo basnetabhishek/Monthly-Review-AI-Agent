@@ -17,12 +17,13 @@ const getCachedOpenAiNarrative = unstable_cache(
     const { text } = await generateText({
       model: openai(process.env.OPENAI_MODEL ?? "gpt-5.6-luna"),
       system:
-        "You are an executive reporting analyst. Use only the supplied facts. Never invent numbers, causes, forecasts, or recommendations unsupported by the payload. Write exactly three concise sentences for senior leadership.",
+        "You are an executive reporting analyst. Use only the supplied facts. Never invent numbers, causes, forecasts, currencies, or recommendations unsupported by the payload. Currency is unspecified: never use a currency symbol or name a currency; refer to sales and profit as reported amounts. Write exactly three concise sentences for senior leadership.",
       prompt: `Create an executive summary from this governed monthly KPI payload:\n${JSON.stringify({
+        monetaryUnit: "unspecified source monetary units",
         current: data.current,
         trend: data.trend,
         targetWatchlist: data.targets.slice(0, 3),
-        profitExceptions: data.exceptions.length,
+        topProfitExceptionsIncluded: data.exceptions.length,
       })}`,
       maxOutputTokens: 220,
       providerOptions: {
