@@ -1,59 +1,127 @@
 # Monthly Business Review AI Agent
 
-A portfolio project that converts governed Databricks SQL metrics into an executive monthly business review.
+An end-to-end data and AI portfolio project that turns governed Databricks metrics into a polished executive monthly business review.
 
-Core principle: **SQL calculates the facts; AI explains the facts.**
+> **SQL calculates the facts. AI explains the facts.**
 
-## Current status
+## What it demonstrates
 
-Phase 1 — dataset acquisition, verification, metric definitions, and KPI regression fixtures completed. Next: Databricks Bronze ingestion design.
+- Databricks medallion architecture with Bronze, Silver, and Gold Delta tables
+- Governed KPI views served through Databricks SQL
+- A controlled report workflow with visible query, validation, and narrative stages
+- Grounded AI summaries that receive validated KPI payloads rather than raw data
+- A public Next.js experience designed for Vercel deployment
+- A private Databricks App implementation for enterprise architecture proof
+- Automated regression checks for business metrics and data quality
 
-The exact source is a 51,290-row, 27-column tab-delimited Global Superstore file covering 2011–2014. The project uses source-provided Sales and Profit without inventing additional cost or discount calculations. Currency, returns, and cancellations are explicitly documented limitations.
+## User experience
 
-## MVP scope
+The public application lets a visitor select a reporting period and generate an executive review. It displays progress while the system validates the KPI snapshot, builds the business narrative, and renders:
 
-- Global Superstore source data plus clearly labeled synthetic monthly targets generated from a documented prior-year policy
-- Bronze, Silver, and minimal Gold Delta tables
-- Controlled SQL catalog for eight core KPIs
-- Typed KPI payload
-- Deterministic materiality rules
-- Structured AI narrative with metric references
-- Numerical, entity, and causal-language validation
-- SQL-only fallback if narrative generation is unavailable
-- Executive report UI and basic report history
+- Executive summary
+- Revenue, profit, margin, orders, and units
+- Month-over-month performance
+- Market and category performance
+- Target attainment
+- Negative-profit exceptions
 
-## MVP KPIs
+The included public demo uses a sanitized, validated December 2014 KPI snapshot. The raw Global Superstore source file and all secrets are intentionally excluded from Git.
 
-1. Revenue
-2. Profit
-3. Profit margin
-4. Distinct orders
-5. Units sold
-6. Month-over-month change
-7. Target attainment
-8. Negative-profit exceptions
+## Architecture
+
+```text
+Global Superstore source
+          |
+          v
+Databricks Bronze -> Silver -> Gold
+          |                    |
+          |                    v
+          |             Governed KPI views
+          |                    |
+          +--------------------v
+                    Validated report payload
+                              |
+                  +-----------+-----------+
+                  |                       |
+                  v                       v
+        Private Databricks App    Public Next.js app
+                                          |
+                                          v
+                                OpenAI grounded narrative
+                                          |
+                                          v
+                                      Vercel
+```
+
+The model is never responsible for calculating business metrics. SQL produces the numbers, deterministic checks validate them, and the model is limited to explaining the supplied facts. If AI generation is unavailable, the application returns a deterministic fallback narrative.
+
+## Technology
+
+- **Data platform:** Databricks Free Edition, Unity Catalog, Delta Lake, SQL Warehouse
+- **Data processing:** PySpark and SQL
+- **Public application:** Next.js 16, React 19, TypeScript
+- **AI layer:** Vercel AI SDK with the OpenAI provider
+- **Hosting target:** Vercel
+- **Private application:** Databricks Apps with Python
+- **Testing:** Pytest and KPI regression fixtures
 
 ## Repository layout
 
 ```text
-data/raw/          Local source files; ignored by Git
-data/targets/      Optional target templates for a later externally supplied planning process
-docs/              Architecture, dataset profile, and metric definitions
-notebooks/         Databricks ingestion and transformation notebooks
-sql/kpis/          Controlled reporting SQL
-backend/           Report orchestration and validation service
-frontend/          Executive report application
-tests/             KPI and narrative-grounding tests
+notebooks/          Databricks profiling, ingestion, transformation, and validation
+sql/kpis/           Controlled KPI queries
+backend/            Typed payload and validation services
+deploy/             Databricks application packages
+public-app/         Public Next.js portfolio application
+docs/               Architecture, dataset profile, KPI baseline, and metric dictionary
+tests/              Data quality and KPI regression tests
+data/targets/       Synthetic planning targets with a documented policy
+data/raw/           Local-only source location; contents are ignored by Git
 ```
 
-## Immediate next step
+## Run the public application locally
 
-Place the exact Global Superstore CSV or Excel workbook in `data/raw/`. Record its original URL, publisher, download date, and license in `docs/dataset-profile.md`. Then run the profiling workflow before implementing transformations.
-
-Run the profiler with the bundled Python runtime or any local Python environment containing pandas:
+Requirements: Node.js 20.9 or newer and pnpm.
 
 ```powershell
-python notebooks/00_profile_source.py data/raw/<global-superstore-file>
+cd public-app
+pnpm install
+pnpm dev
 ```
 
-It writes a detailed Markdown result to `docs/dataset-profile-results.md` and machine-readable evidence to `work/dataset_profile.json`.
+Open `http://localhost:3000` and click **Generate report**.
+
+The application works without an API key by using its validated fallback summary. To enable generated OpenAI narratives, copy `public-app/.env.example` to `public-app/.env.local` and set:
+
+```text
+OPENAI_API_KEY=your_key_here
+```
+
+Never commit `.env.local` or an API key. The repository already ignores both.
+
+## Deploy to Vercel
+
+1. Import this GitHub repository into Vercel.
+2. Set the project root directory to `public-app`.
+3. Deploy without an API key for the safe deterministic demo, or add `OPENAI_API_KEY` as a server-side environment variable after rate limiting is configured.
+4. Keep the raw dataset and Databricks credentials outside the public deployment.
+
+## Data and metric governance
+
+The source is a 51,290-row, 27-column, tab-delimited Global Superstore dataset covering 2011–2014. Currency normalization, returns, and cancellations are documented limitations. Synthetic monthly targets are clearly labeled and are generated from a documented prior-year policy.
+
+Metric definitions and validation evidence are available in:
+
+- `docs/metric-dictionary.md`
+- `docs/kpi-baseline.md`
+- `docs/dataset-profile-results.md`
+- `docs/architecture.md`
+
+## Privacy and security
+
+- No raw customer-level dataset is committed
+- No Databricks token or OpenAI key is committed
+- Public hosting receives only sanitized KPI snapshots
+- Generated narratives are constrained to supplied facts
+- The Databricks workspace remains private and governed
+
