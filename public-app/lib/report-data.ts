@@ -1,4 +1,28 @@
-export const reportData = {
+export type ReportRow =
+  | readonly [string, string, number, number]
+  | readonly [string, string, number, number, number];
+
+export type ReportData = {
+  reportMonth: string;
+  current: {
+    sales: number;
+    profit: number;
+    margin: number;
+    orders: number;
+    units: number;
+    negativeOrders: number;
+    salesMom: number;
+    profitMom: number;
+    ordersMom: number;
+  };
+  trend: readonly { month: string; sales: number }[];
+  markets: readonly ReportRow[];
+  categories: readonly ReportRow[];
+  targets: readonly ReportRow[];
+  exceptions: readonly ReportRow[];
+};
+
+export const reportData: ReportData = {
   reportMonth: "2014-12",
   current: { sales: 503154, profit: 46916.52, margin: 9.324, orders: 1102, units: 7513, negativeOrders: 284, salesMom: -9.393, profitMom: -25.359, ordersMom: 1.848 },
   trend: [
@@ -19,9 +43,9 @@ export const reportData = {
   exceptions: [
     ["US-2014-122714", "US · Central", 1890, -2929], ["TU-2014-6470", "EMEA · EMEA", 1667, -2053], ["US-2014-160591", "LATAM · South", 1326, -1743], ["ES-2014-1406762", "EU · Central", 1560, -1713], ["NI-2014-5830", "Africa · Africa", 724, -1472], ["IN-2014-30390", "APAC · Southeast Asia", 1363, -1141]
   ],
-} as const;
+};
 
-export function deterministicSummary() {
-  const c = reportData.current;
+export function deterministicSummary(data: ReportData = reportData) {
+  const c = data.current;
   return `Sales declined ${Math.abs(c.salesMom).toFixed(1)}% month over month to ${c.sales.toLocaleString()} source monetary units. The month remained profitable, with a ${c.margin.toFixed(1)}% margin across ${c.orders.toLocaleString()} logical orders. Management attention should focus on the ${c.negativeOrders} orders that generated negative profit.`;
 }

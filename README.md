@@ -115,12 +115,29 @@ OPENAI_API_KEY=your_key_here
 
 Never commit `.env.local` or an API key. The repository already ignores both.
 
+## Connect the live Databricks warehouse
+
+The report endpoint can query the governed reporting views directly through the Databricks SQL Statement Execution API. Configure these server-only variables locally or in Vercel:
+
+```text
+DATABRICKS_SERVER_HOSTNAME=dbc-example.cloud.databricks.com
+DATABRICKS_WAREHOUSE_ID=your_warehouse_id
+DATABRICKS_TOKEN=your_short_lived_token
+```
+
+Find the hostname and HTTP path under **SQL Warehouses → your warehouse → Connection details**. The warehouse ID is the final value in an HTTP path such as `/sql/1.0/warehouses/<warehouse-id>`.
+
+The integration uses only hard-coded, parameterized `SELECT` statements against the `workspace.mbr_reporting` views. Results are cached for one hour to protect Free Edition quotas. If the warehouse is sleeping, unavailable, or not configured, the application clearly falls back to its validated KPI snapshot.
+
+For a portfolio prototype, use a short-lived Databricks personal access token stored only as a sensitive Vercel environment variable. In a production account, replace the personal identity with a least-privilege service principal using OAuth machine-to-machine authentication.
+
 ## Deploy to Vercel
 
 1. Import this GitHub repository into Vercel.
 2. Set the project root directory to `public-app`.
-3. Deploy without an API key for the safe deterministic demo, or add `OPENAI_API_KEY` as a server-side environment variable after rate limiting is configured.
-4. Keep the raw dataset and Databricks credentials outside the public deployment.
+3. Add the Databricks variables as sensitive, server-side environment variables; never prefix them with `NEXT_PUBLIC_`.
+4. Deploy without an OpenAI key for the deterministic narrative, or add `OPENAI_API_KEY` after rate limiting is configured.
+5. Keep the raw dataset and all credential values outside Git and browser code.
 
 ## Data and metric governance
 
@@ -137,7 +154,6 @@ Metric definitions and validation evidence are available in:
 
 - No raw customer-level dataset is committed
 - No Databricks token or OpenAI key is committed
-- Public hosting receives only sanitized KPI snapshots
+- Public hosting returns only aggregated KPI results from governed reporting views
 - Generated narratives are constrained to supplied facts
 - The Databricks workspace remains private and governed
-
