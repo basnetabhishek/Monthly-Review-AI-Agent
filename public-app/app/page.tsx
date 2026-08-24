@@ -1,18 +1,42 @@
 "use client";
-import { useState } from "react";
-import { deterministicSummary, reportData, type ReportData, type ReportRow } from "@/lib/report-data";
 
-type Report = ReportData & { summary: string; narrativeMode: string; dataSource: string };
-const fmt = (n:number) => new Intl.NumberFormat("en-US",{maximumFractionDigits:0}).format(n);
+import { useEffect, useState } from "react";
+import { MonthPicker } from "@/app/components/month-picker";
+import { ReportView } from "@/app/components/report-view";
+import { useReportMonths } from "@/app/hooks/use-report-months";
+import { saveReportToArchive } from "@/lib/archive";
+import type { ReportResponse } from "@/lib/analytics-types";
 
-export default function Page(){
- const [report,setReport]=useState<Report|null>(null); const [loading,setLoading]=useState(false); const [step,setStep]=useState(0);
- const stages=["Running governed SQL","Validating KPI payload","Identifying material changes","Generating executive narrative"];
- async function generate(){setLoading(true);setStep(0);const timer=setInterval(()=>setStep(s=>Math.min(s+1,3)),650);try{const r=await fetch("/api/report",{method:"POST"});setReport(await r.json())}catch{setReport({...reportData,summary:deterministicSummary(),narrativeMode:"validated-fallback",dataSource:"validated-snapshot"})}finally{clearInterval(timer);setLoading(false)}}
- const d=report;
- return <div className="shell"><aside><div className="brand"><i/>Northstar</div><p>BUSINESS INTELLIGENCE</p><nav><b>Monthly review</b><span>Performance trends</span><span>Market analysis</span><span>Report archive</span></nav><footer>CONTROLLED ANALYTICS<br/>Databricks-calculated<br/>AI-explained</footer></aside><main><header><div><h1>Monthly Business Review</h1><p>Decision-ready performance intelligence, grounded in governed data.</p></div><div className="actions"><select aria-label="Report month"><option>December 2014</option></select><button onClick={generate} disabled={loading}>{loading?"Generating…":"Generate report →"}</button></div></header>{loading&&<div className="progress"><i/><b>{stages[step]}</b><span>Step {step+1} of 4</span></div>}{!d?<div className="empty">Select a reporting period and generate the executive report.</div>:<ReportView d={d}/>}</main></div>
+const stages = [["Running governed SQL", "Querying approved Databricks reporting views"], ["Validating KPI payload", "Checking completeness and metric consistency"], ["Identifying material changes", "Comparing performance to the prior month"], ["Generating executive narrative", "Turning governed facts into decision-ready context"]] as const;
+
+export default function Page() {
+  const { months, loading: monthsLoading } = useReportMonths();
+  const [selectedMonth, setSelectedMonth] = useState("");
+  const [report, setReport] = useState<ReportResponse | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState(0);
+  const [error, setError] = useState("");
+
+  useEffect(() => { if (!selectedMonth && months[0]) setSelectedMonth(months[0].value); }, [months, selectedMonth]);
+
+  async function generate() {
+    if (!selectedMonth) return;
+    setLoading(true); setReport(null); setError(""); setStep(0);
+    const timer = window.setInterval(() => setStep((current) => Math.min(current + 1, 3)), 900);
+    try {
+      const response = await fetch("/api/report", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ month: selectedMonth }) });
+      const payload = (await response.json()) as ReportResponse | { error?: string };
+      if (!response.ok || !("reportMonth" in payload)) throw new Error("error" in payload ? payload.error ?? "The report could not be generated." : "The report could not be generated.");
+      setStep(3); setReport(payload); saveReportToArchive(payload);
+    } catch (caught) { setError(caught instanceof Error ? caught.message : "The report could not be generated."); }
+    finally { window.clearInterval(timer); setLoading(false); }
+  }
+
+  return <>
+    <header className="pageHeader"><div><span className="sectionLabel">01 / EXECUTIVE REPORTING</span><h1>Monthly Business Review</h1><p>Decision-ready performance intelligence, grounded in governed data.</p></div><div className="actions"><MonthPicker months={months} value={selectedMonth} onChange={setSelectedMonth} disabled={loading || monthsLoading} /><button className="primaryButton" onClick={generate} disabled={loading || !selectedMonth}>{loading ? "Generating…" : "Generate report"}<span>→</span></button></div></header>
+    {loading && <div className="generationPanel animateIn"><div className="spinner" /><div><small>AGENT WORKFLOW · STEP {step + 1} OF 4</small><b>{stages[step][0]}</b><span>{stages[step][1]}</span></div><div className="stepTrack">{stages.map((stage, index) => <i className={index <= step ? "done" : ""} key={stage[0]} />)}</div></div>}
+    {error && <div className="errorBanner" role="alert"><b>Report generation paused.</b><span>{error}</span></div>}
+    {!report && !loading && <div className="emptyState"><span>MONTHLY BUSINESS REVIEW AGENT</span><h2>From governed data to executive clarity.</h2><p>Select any month in the four-year dataset. The agent runs controlled SQL, validates the KPI payload, and produces a traceable executive report.</p><button className="textButton" onClick={generate} disabled={!selectedMonth}>Generate the first report →</button><div className="processRail"><i>01<small>QUERY</small></i><b /><i>02<small>VALIDATE</small></i><b /><i>03<small>EXPLAIN</small></i><b /><i>04<small>ARCHIVE</small></i></div></div>}
+    {report && <ReportView report={report} />}
+  </>;
 }
-
-function ReportView({d}:{d:Report}){const c=d.current,max=Math.max(...d.trend.map(x=>x.sales));const live=d.dataSource==="databricks-live";return <section className="report"><div className="reportHead"><div><small>EXECUTIVE PERFORMANCE REPORT</small><h2>December 2014</h2></div><em>✓ {live?"DATABRICKS LIVE":"DATA VALIDATED"}</em></div><div className="kpis"><Kpi label="Reported sales" value={fmt(c.sales)} delta={c.salesMom}/><Kpi label="Reported profit" value={fmt(c.profit)} delta={c.profitMom}/><Kpi label="Logical orders" value={fmt(c.orders)} delta={c.ordersMom}/><div className="card kpi"><label>Profit margin</label><strong>{c.margin.toFixed(1)}%</strong><span>{fmt(c.units)} units sold</span></div></div><div className="heroGrid"><div className="card"><h3>Sales trajectory</h3><div className="bars">{d.trend.map(x=><div key={x.month} style={{height:`${x.sales/max*100}%`}} title={`${x.month}: ${fmt(x.sales)}`}/>)}</div><div className="axis"><span>Sep 2014</span><span>Dec 2014</span></div></div><article className="card summary"><small>EXECUTIVE SUMMARY · {d.narrativeMode}</small><p>{d.summary}</p><footer>{live?"Every number was queried from governed Databricks views.":"Every number is sourced from the validated KPI snapshot."}</footer></article></div><div className="tables"><DataTable title="Market performance" rows={d.markets}/><DataTable title="Category performance" rows={d.categories}/><DataTable title="Target watchlist" rows={d.targets}/><DataTable title="Profit exceptions" rows={d.exceptions}/></div></section>}
-function Kpi({label,value,delta}:{label:string,value:string,delta:number}){return <div className="card kpi"><label>{label}</label><strong>{value}</strong><span className={delta>=0?"positive":"negative"}>{delta>=0?"+":""}{delta.toFixed(1)}% vs prior month</span></div>}
-function DataTable({title,rows}:{title:string,rows:readonly ReportRow[]}){return <div className="card table"><h3>{title}</h3>{rows.map((r,i)=><div className="row" key={i}><span><b>{r[0]}</b><small>{r[1]}</small></span><span>{fmt(r[2])}</span><span className={r[3]<0?"negative":""}>{fmt(r[3])}</span><span>{r[4]!==undefined?`${r[4]}%`:""}</span></div>)}</div>}

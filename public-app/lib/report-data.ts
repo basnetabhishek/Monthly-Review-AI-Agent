@@ -11,9 +11,9 @@ export type ReportData = {
     orders: number;
     units: number;
     negativeOrders: number;
-    salesMom: number;
-    profitMom: number;
-    ordersMom: number;
+    salesMom: number | null;
+    profitMom: number | null;
+    ordersMom: number | null;
   };
   trend: readonly { month: string; sales: number }[];
   markets: readonly ReportRow[];
@@ -47,5 +47,8 @@ export const reportData: ReportData = {
 
 export function deterministicSummary(data: ReportData = reportData) {
   const c = data.current;
-  return `Sales declined ${Math.abs(c.salesMom).toFixed(1)}% month over month to ${c.sales.toLocaleString()} source monetary units. The month remained profitable, with a ${c.margin.toFixed(1)}% margin across ${c.orders.toLocaleString()} logical orders. Management attention should focus on the ${c.negativeOrders} orders that generated negative profit.`;
+  const movement = c.salesMom == null
+    ? "Month-over-month sales comparison is unavailable for this first reporting period"
+    : `Sales ${c.salesMom >= 0 ? "increased" : "declined"} ${Math.abs(c.salesMom).toFixed(1)}% month over month to ${c.sales.toLocaleString()} source monetary units`;
+  return `${movement}. The month delivered ${c.profit.toLocaleString(undefined, { maximumFractionDigits: 0 })} in reported profit, with a ${c.margin.toFixed(1)}% margin across ${c.orders.toLocaleString()} logical orders. Management attention should focus on the ${c.negativeOrders.toLocaleString()} orders that generated negative profit.`;
 }

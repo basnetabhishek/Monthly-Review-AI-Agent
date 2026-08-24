@@ -27,12 +27,14 @@ These audiences were selected because monthly reporting sits at the intersection
 - A controlled report workflow with visible query, validation, and narrative stages
 - Grounded AI summaries that receive validated KPI payloads rather than raw data
 - A public Next.js experience designed for Vercel deployment
+- Dynamic discovery and analysis of all 48 monthly reporting periods
+- Interactive trend, market, category, target, and report-history experiences
 - A private Databricks App implementation for enterprise architecture proof
 - Automated regression checks for business metrics and data quality
 
 ## User experience
 
-The public application lets a visitor select a reporting period and generate an executive review. It displays progress while the system validates the KPI snapshot, builds the business narrative, and renders:
+The public application lets a visitor select any reporting period from January 2011 through December 2014 and generate an executive review. It displays progress while the system queries Databricks, validates the KPI payload, builds the business narrative, and renders:
 
 - Executive summary
 - Revenue, profit, margin, orders, and units
@@ -40,8 +42,11 @@ The public application lets a visitor select a reporting period and generate an 
 - Market and category performance
 - Target attainment
 - Negative-profit exceptions
+- Twelve-month, twenty-four-month, and full-history performance trends
+- Filterable market, region, category, and target-attainment analysis
+- A private browser-local archive with downloadable report payloads
 
-The included public demo uses a sanitized, validated December 2014 KPI snapshot. The raw Global Superstore source file and all secrets are intentionally excluded from Git.
+When live Databricks access is configured, the application discovers and queries all 48 reporting periods. A sanitized, validated December 2014 KPI snapshot remains available as a resilience fallback. The raw Global Superstore source file and all secrets are intentionally excluded from Git.
 
 ## Architecture
 
@@ -130,7 +135,7 @@ DATABRICKS_TOKEN=your_short_lived_token
 
 Find the hostname and HTTP path under **SQL Warehouses → your warehouse → Connection details**. The warehouse ID is the final value in an HTTP path such as `/sql/1.0/warehouses/<warehouse-id>`.
 
-The integration uses only hard-coded, parameterized `SELECT` statements against the `workspace.mbr_reporting` views. Results are cached for one hour to protect Free Edition quotas. If the warehouse is sleeping, unavailable, or not configured, the application clearly falls back to its validated KPI snapshot.
+The integration uses only hard-coded, parameterized `SELECT` statements against the `workspace.mbr_reporting` views. Results are cached for one hour to protect Free Edition quotas. If the warehouse is sleeping, unavailable, or not configured, the application clearly falls back to its validated December 2014 KPI snapshot; it never presents fallback data as another month.
 
 For a portfolio prototype, use a short-lived Databricks personal access token stored only as a sensitive Vercel environment variable. In a production account, replace the personal identity with a least-privilege service principal using OAuth machine-to-machine authentication.
 
@@ -158,6 +163,6 @@ Metric definitions and validation evidence are available in:
 - No raw customer-level dataset is committed
 - No Databricks token or OpenAI key is committed
 - Public hosting returns only aggregated KPI results from governed reporting views
+- The report archive uses a versioned browser-local store, so no shared write database or additional cloud account is required for the portfolio release
 - Generated narratives are constrained to supplied facts
 - The Databricks workspace remains private and governed
-
