@@ -1,8 +1,22 @@
 # Monthly Business Review AI Agent
 
-An end-to-end data and AI portfolio project that turns governed Databricks metrics into a polished executive monthly business review.
+This project grew from a challenge I encountered repeatedly in my professional experience: monthly business reporting often requires hours of extracting data, reconciling metrics, investigating performance changes, and translating the results into a clear story for leadership.
 
-> **SQL calculates the facts. AI explains the facts.**
+I transformed that real-world problem into a demonstrable end-to-end data and AI solution. Using public and synthetic data, the project shows how Databricks, governed SQL, validation controls, generative AI, and a modern web application can work together to produce reliable, executive-ready reports in minutes.
+
+More than a dashboard, this project demonstrates how I approach business problems: understand the decision leaders need to make, establish trusted metrics, automate repetitive work, and use AI only where it adds meaningful value. The concept is inspired by workflows from my previous roles, while the implementation was built independently without using confidential employer data, systems, or intellectual property.
+
+## Intended audience
+
+This solution is designed for three connected groups:
+
+- **Executives and business leaders** who need a concise, trustworthy view of performance, emerging risks, and areas requiring action—without reviewing spreadsheets or running queries themselves.
+- **Finance, sales, and operations teams** who spend significant time assembling recurring reports and explaining changes across revenue, profitability, targets, products, and markets.
+- **Data and analytics teams** responsible for delivering governed metrics while ensuring that AI-generated insights remain traceable, validated, and grounded in approved business data.
+
+These audiences were selected because monthly reporting sits at the intersection of business decision-making, operational analysis, and data governance. The project demonstrates how one controlled workflow can reduce manual effort for analysts, preserve trust for data teams, and deliver faster insights to leadership.
+
+> **SQL establishes the truth. Validation protects it. AI turns it into a decision-ready narrative.**
 
 ## What it demonstrates
 
