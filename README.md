@@ -2,9 +2,9 @@
 
 This project grew from a challenge I encountered repeatedly in my professional experience: monthly business reporting often requires hours of extracting data, reconciling metrics, investigating performance changes, and translating the results into a clear story for leadership.
 
-I transformed that real-world problem into a demonstrable end-to-end data and AI solution. Using public and synthetic data, the project shows how Databricks, governed SQL, validation controls, generative AI, and a modern web application can work together to produce reliable, executive-ready reports in minutes.
+Using public and synthetic data, the project shows how Databricks, governed SQL, validation controls, generative AI, and a modern web application can work together to produce reliable, executive-ready reports in minutes.
 
-More than a dashboard, this project demonstrates how I approach business problems: understand the decision leaders need to make, establish trusted metrics, automate repetitive work, and use AI only where it adds meaningful value. The concept is inspired by workflows from my previous roles, while the implementation was built independently without using confidential employer data, systems, or intellectual property.
+More than a dashboard, this project demonstrates approach to resolve business problems: understand the decision leaders need to make, establish trusted metrics, automate repetitive work, and use AI only where it adds meaningful value. The concept is inspired by workflows from my previous roles, while the implementation was built independently without using confidential employer data, systems, or intellectual property.
 
 ## Intended audience
 
