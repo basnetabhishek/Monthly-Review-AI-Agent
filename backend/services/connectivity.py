@@ -45,8 +45,8 @@ def check_reporting_sql() -> dict[str, object]:
             wait_timeout="30s",
         )
         state = getattr(getattr(response, "status", None), "state", None)
-        if state != StatementState.SUCCEEDED:
-            state_label = getattr(state, "value", str(state))
+        state_label = getattr(state, "value", state)
+        if state_label != StatementState.SUCCEEDED.value:
             raise RuntimeError(f"SQL statement did not succeed (state={state_label}).")
 
         month_count, first_month, last_month = _first_row(response)
@@ -84,3 +84,4 @@ def check_openai_egress() -> dict[str, object]:
         "http_status": response.status_code,
         "credentials_sent": False,
     }
+
