@@ -111,7 +111,10 @@ The application works without an API key by using its validated fallback summary
 
 ```text
 OPENAI_API_KEY=your_key_here
+OPENAI_MODEL=gpt-5.6-luna
 ```
+
+`gpt-5.6-luna` is the default cost-efficient model for this short executive-writing workload. Generated narratives are cached for one hour, while the deterministic summary remains available whenever OpenAI is unavailable or unconfigured.
 
 Never commit `.env.local` or an API key. The repository already ignores both.
 
@@ -136,7 +139,7 @@ For a portfolio prototype, use a short-lived Databricks personal access token st
 1. Import this GitHub repository into Vercel.
 2. Set the project root directory to `public-app`.
 3. Add the Databricks variables as sensitive, server-side environment variables; never prefix them with `NEXT_PUBLIC_`.
-4. Deploy without an OpenAI key for the deterministic narrative, or add `OPENAI_API_KEY` after rate limiting is configured.
+4. Add `OPENAI_API_KEY` as a sensitive production variable and optionally set `OPENAI_MODEL`; the application caches generated narratives for one hour and retains a deterministic fallback.
 5. Keep the raw dataset and all credential values outside Git and browser code.
 
 ## Data and metric governance
@@ -157,3 +160,4 @@ Metric definitions and validation evidence are available in:
 - Public hosting returns only aggregated KPI results from governed reporting views
 - Generated narratives are constrained to supplied facts
 - The Databricks workspace remains private and governed
+
