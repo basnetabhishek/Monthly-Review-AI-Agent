@@ -1,0 +1,16 @@
+{
+  "months": [
+    "2011-01",
+    "2012-08",
+    "2014-12",
+    "2014-11",
+    "2014-10"
+  ],
+  "reasons": {
+    "2011-01": "first available month; prior-period metrics must be null",
+    "2012-08": "largest month-over-month reported-sales increase",
+    "2014-12": "highest negative-profit order count; last available month",
+    "2014-11": "highest reported-sales month",
+    "2014-10": "additional recent regression-test month"
+  }
+}

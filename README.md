@@ -57,4 +57,3 @@ python notebooks/00_profile_source.py data/raw/<global-superstore-file>
 ```
 
 It writes a detailed Markdown result to `docs/dataset-profile-results.md` and machine-readable evidence to `work/dataset_profile.json`.
-

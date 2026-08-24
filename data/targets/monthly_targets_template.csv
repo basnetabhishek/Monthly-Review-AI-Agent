@@ -1,0 +1,2 @@
+target_month,market,region,category,revenue_target,profit_target,orders_target,is_synthetic
+YYYY-MM-01,Example Market,Example Region,Technology,0.00,0.00,0,true

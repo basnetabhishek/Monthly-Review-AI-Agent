@@ -1,0 +1,31 @@
+# Source and generated data
+data/raw/*
+!data/raw/.gitkeep
+data/generated/
+work/
+
+# Secrets and local environments
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# JavaScript
+node_modules/
+dist/
+
+# IDE and OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Generated reports
+outputs/
+*.pdf
