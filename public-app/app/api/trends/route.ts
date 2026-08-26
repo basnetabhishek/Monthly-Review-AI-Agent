@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 
 const getCachedTrends = unstable_cache(
   getDatabricksTrendData,
-  ["monthly-business-review", "performance-trends", "v2"],
+  ["monthly-business-review", "performance-trends", "date-rebased-v3"],
   { revalidate: 3600 },
 );
 

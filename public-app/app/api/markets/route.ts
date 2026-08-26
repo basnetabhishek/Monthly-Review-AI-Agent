@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 
 const getCachedMarketAnalysis = unstable_cache(
   getDatabricksMarketAnalysis,
-  ["monthly-business-review", "market-analysis", "v2"],
+  ["monthly-business-review", "market-analysis", "date-rebased-v3"],
   { revalidate: 3600 },
 );
 

@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 
 const getCachedDatabricksReport = unstable_cache(
   getDatabricksReportData,
-  ["monthly-business-review", "report", "v2"],
+  ["monthly-business-review", "report", "date-rebased-v3"],
   { revalidate: 3600 },
 );
 
@@ -35,7 +35,7 @@ const getCachedOpenAiNarrative = unstable_cache(
     });
     return text.trim();
   },
-  ["monthly-business-review", "openai-narrative", "v2"],
+  ["monthly-business-review", "openai-narrative", "date-rebased-v3"],
   { revalidate: 3600 },
 );
 

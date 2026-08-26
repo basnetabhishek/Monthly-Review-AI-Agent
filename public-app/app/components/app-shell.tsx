@@ -32,7 +32,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <footer>
           <span>CONTROLLED ANALYTICS</span>
           Databricks-calculated<br />AI-explained
-          <b>v2.0 · LIVE PORTFOLIO</b>
+          <b>v3.0 · DATE-REBASED DEMO</b>
         </footer>
       </aside>
       <main>{children}</main>

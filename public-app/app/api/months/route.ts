@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 
 const getCachedMonths = unstable_cache(
   getAvailableReportMonths,
-  ["monthly-business-review", "available-months", "v2"],
+  ["monthly-business-review", "available-months", "date-rebased-v3"],
   { revalidate: 3600 },
 );
 

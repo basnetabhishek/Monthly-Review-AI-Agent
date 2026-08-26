@@ -6,7 +6,12 @@ import type {
   TrendPoint,
 } from "@/lib/analytics-types";
 import type { ReportData, ReportRow } from "@/lib/report-data";
-import { formatReportMonth, isSupportedReportMonth } from "@/lib/report-months";
+import {
+  formatReportMonth,
+  isSupportedReportMonth,
+  toDisplayReportMonth,
+  toSourceReportMonth,
+} from "@/lib/report-months";
 
 type StatementResponse = {
   statement_id?: string;
@@ -174,8 +179,13 @@ const nullableNumber = (value: unknown) => {
 const text = (value: unknown) => String(value ?? "");
 const month = (value: unknown) => text(value).slice(0, 7);
 const monthParameter = (reportMonth: string): QueryParameter[] => [
-  { name: "report_month", value: `${reportMonth}-01`, type: "DATE" },
+  { name: "report_month", value: `${toSourceReportMonth(reportMonth)}-01`, type: "DATE" },
 ];
+
+const displayMonth = (value: unknown) => toDisplayReportMonth(month(value));
+
+const displayOrderId = (value: unknown, reportMonth: string) =>
+  text(value).replace(/-(20\d{2})-/, `-${reportMonth.slice(0, 4)}-`);
 
 function assertReportMonth(reportMonth: string) {
   if (!isSupportedReportMonth(reportMonth)) throw new Error("Unsupported report month");
@@ -199,7 +209,7 @@ const performanceItem = (item: ResultRow, group: string, segment: string): Perfo
 export async function getAvailableReportMonths(): Promise<MonthOption[]> {
   const rows = await execute(queries.months, 60);
   return rows.map((item) => {
-    const value = month(item.report_month);
+    const value = displayMonth(item.report_month);
     return { value, label: formatReportMonth(value) };
   });
 }
@@ -234,7 +244,7 @@ export async function getDatabricksReportData(reportMonth: string): Promise<Repo
       ordersMom: nullableNumber(executive.orders_mom_pct),
     },
     trend: trendRows.map((item) => ({
-      month: month(item.report_month),
+      month: displayMonth(item.report_month),
       sales: number(item.reported_sales),
     })),
     markets: marketRows.slice(0, 6).map((item) =>
@@ -247,7 +257,7 @@ export async function getDatabricksReportData(reportMonth: string): Promise<Repo
       reportRow([item.market, item.segment, item.actual_sales, item.revenue_target, item.revenue_attainment_pct]),
     ),
     exceptions: exceptionRows.map((item) =>
-      reportRow([item.order_id, item.location, item.order_reported_sales, item.order_reported_profit], false),
+      reportRow([displayOrderId(item.order_id, reportMonth), item.location, item.order_reported_sales, item.order_reported_profit], false),
     ),
   };
 }
@@ -255,7 +265,7 @@ export async function getDatabricksReportData(reportMonth: string): Promise<Repo
 export async function getDatabricksTrendData(): Promise<TrendPoint[]> {
   const rows = await execute(queries.allTrends, 60);
   return rows.map((item) => ({
-    month: month(item.report_month),
+    month: displayMonth(item.report_month),
     sales: number(item.reported_sales),
     profit: number(item.reported_profit),
     margin: number(item.profit_margin_pct),

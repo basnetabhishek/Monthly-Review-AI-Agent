@@ -34,7 +34,7 @@ These audiences were selected because monthly reporting sits at the intersection
 
 ## User experience
 
-The public application lets a visitor select any reporting period from January 2011 through December 2014 and generate an executive review. It displays progress while the system queries Databricks, validates the KPI payload, builds the business narrative, and renders:
+The public application lets a visitor select any reporting period from August 2022 through July 2026 and generate an executive review. It displays progress while the system queries Databricks, validates the KPI payload, builds the business narrative, and renders:
 
 - Executive summary
 - Revenue, profit, margin, orders, and units
@@ -46,7 +46,9 @@ The public application lets a visitor select any reporting period from January 2
 - Filterable market, region, category, and target-attainment analysis
 - A private browser-local archive with downloadable report payloads
 
-When live Databricks access is configured, the application discovers and queries all 48 reporting periods. A sanitized, validated December 2014 KPI snapshot remains available as a resilience fallback. The raw Global Superstore source file and all secrets are intentionally excluded from Git.
+When live Databricks access is configured, the application discovers and queries all 48 reporting periods. A sanitized, validated July 2026 KPI snapshot remains available as a resilience fallback. The raw Global Superstore source file and all secrets are intentionally excluded from Git.
+
+For portfolio presentation, the historical source timeline is deterministically shifted forward by 139 months: source January 2011 maps to August 2022 and source December 2014 maps to July 2026. Only dates and embedded order years are relabeled; every commercial KPI and month-over-month relationship remains unchanged. See [`docs/date-rebasing-policy.md`](docs/date-rebasing-policy.md).
 
 ## Architecture
 
@@ -135,7 +137,7 @@ DATABRICKS_TOKEN=your_short_lived_token
 
 Find the hostname and HTTP path under **SQL Warehouses → your warehouse → Connection details**. The warehouse ID is the final value in an HTTP path such as `/sql/1.0/warehouses/<warehouse-id>`.
 
-The integration uses only hard-coded, parameterized `SELECT` statements against the `workspace.mbr_reporting` views. Results are cached for one hour to protect Free Edition quotas. If the warehouse is sleeping, unavailable, or not configured, the application clearly falls back to its validated December 2014 KPI snapshot; it never presents fallback data as another month.
+The integration uses only hard-coded, parameterized `SELECT` statements against the `workspace.mbr_reporting` views. Presented months are translated back to governed source months before each query and returned dates are shifted forward by the same documented offset. Results are cached for one hour to protect Free Edition quotas. If the warehouse is sleeping, unavailable, or not configured, the application clearly falls back to its validated July 2026 KPI snapshot; it never presents fallback data as another month.
 
 For a portfolio prototype, use a short-lived Databricks personal access token stored only as a sensitive Vercel environment variable. In a production account, replace the personal identity with a least-privilege service principal using OAuth machine-to-machine authentication.
 
@@ -149,7 +151,7 @@ For a portfolio prototype, use a short-lived Databricks personal access token st
 
 ## Data and metric governance
 
-The source is a 51,290-row, 27-column, tab-delimited Global Superstore dataset covering 2011–2014. Currency normalization, returns, and cancellations are documented limitations. Synthetic monthly targets are clearly labeled and are generated from a documented prior-year policy.
+The source is a 51,290-row, 27-column, tab-delimited Global Superstore dataset with an original 2011–2014 chronology, presented in the portfolio as August 2022–July 2026 under the documented date-rebasing policy. Currency normalization, returns, and cancellations are documented limitations. Synthetic monthly targets are clearly labeled and are generated from a documented prior-year policy.
 
 Metric definitions and validation evidence are available in:
 
