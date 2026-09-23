@@ -1,10 +1,16 @@
 # Monthly Business Review AI Agent
 
-### [Launch the live executive reporting demo →](https://monthly-review-ai-agent.vercel.app)
+[Explore the reporting demo](https://monthly-review-ai-agent.vercel.app) · [Architecture](docs/architecture.md) · [Metric definitions](docs/metric-dictionary.md)
+
+**Databricks · PySpark · SQL · Next.js · TypeScript · LLM-assisted reporting**
+
+An end-to-end portfolio application that turns governed business metrics into a monthly executive review. SQL computes the KPIs, validation checks the payload, and an optional LLM writes the summary with a deterministic fallback.
+
+**Start with:** the demo for the user experience, the architecture for the data flow, and `tests/` for the metric regression checks.
 
 This project grew from a challenge I encountered repeatedly in my professional experience: monthly business reporting often requires hours of extracting data, reconciling metrics, investigating performance changes, and translating the results into a clear story for leadership.
 
-I transformed that real-world problem into a demonstrable end-to-end data and AI solution. Using public and synthetic data, the project shows how Databricks, governed SQL, validation controls, generative AI, and a modern web application can work together to produce reliable, executive-ready reports in minutes.
+I transformed that real-world problem into a demonstrable end-to-end data and AI solution. Using public and synthetic data, the project shows how Databricks, governed SQL, validation controls, generative AI, and a modern web application can work together to produce structured executive reports. Report latency depends on warehouse and model availability.
 
 More than a dashboard, this project demonstrates how I approach business problems: understand the decision leaders need to make, establish trusted metrics, automate repetitive work, and use AI only where it adds meaningful value. The concept is inspired by workflows from my previous roles, while the implementation was built independently without using confidential employer data, systems, or intellectual property.
 
