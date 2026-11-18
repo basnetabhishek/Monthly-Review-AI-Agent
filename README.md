@@ -110,11 +110,14 @@ data/raw/           Local-only source location; contents are ignored by Git
 
 ## Run the public application locally
 
-Requirements: Node.js 20.9 or newer and pnpm.
+Requirements: Node.js 22 or newer and pnpm 10 (the AI SDK dependencies require Node 22).
 
 ```powershell
 cd public-app
 pnpm install
+pnpm test
+pnpm typecheck
+pnpm build
 pnpm dev
 ```
 
