@@ -166,6 +166,10 @@ async function execute(
 }
 
 const number = (value: unknown) => {
+  // Missing SQL values must never be silently converted to zero KPIs.
+  if (value == null || typeof value === "boolean" || (typeof value === "string" && value.trim() === "")) {
+    throw new Error("Databricks returned a missing or invalid numeric value");
+  }
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) throw new Error("Databricks returned an invalid numeric value");
   return parsed;
