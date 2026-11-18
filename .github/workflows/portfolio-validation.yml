@@ -1,0 +1,44 @@
+name: Portfolio validation
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  web:
+    name: Public app tests, types and build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: public-app
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: pnpm
+          cache-dependency-path: public-app/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm typecheck
+      - run: pnpm build
+
+  python:
+    name: Offline backend unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements.txt pandas numpy pytest
+      - run: python -m pytest -q tests/test_connectivity.py tests/test_kpi_payload.py tests/test_source_profiler.py
+        # tests/test_mvp_baseline.py requires the intentionally uncommitted
+        # data/raw/Global Superstore.txt and is not claimed as CI-validated.
