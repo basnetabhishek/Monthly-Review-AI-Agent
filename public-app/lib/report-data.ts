@@ -26,7 +26,6 @@ export const reportData: ReportData = {
   reportMonth: "2026-07",
   current: { sales: 503154, profit: 46916.52, margin: 9.324, orders: 1102, units: 7513, negativeOrders: 284, salesMom: -9.393, profitMom: -25.359, ordersMom: 1.848 },
   trend: [
-    { month: "2026-04", sales: 480000 },
     { month: "2026-05", sales: 422785 },
     { month: "2026-06", sales: 555312 },
     { month: "2026-07", sales: 503154 },

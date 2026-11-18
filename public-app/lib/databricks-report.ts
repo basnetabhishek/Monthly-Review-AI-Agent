@@ -6,6 +6,7 @@ import type {
   TrendPoint,
 } from "@/lib/analytics-types";
 import type { ReportData, ReportRow } from "@/lib/report-data";
+import { parseRequiredKpiNumber as number, parseOptionalKpiNumber as nullableNumber } from "@/lib/sql-number";
 import {
   formatReportMonth,
   isSupportedReportMonth,
@@ -164,17 +165,6 @@ async function execute(
     Object.fromEntries(names.map((name, index) => [name, values[index]])),
   );
 }
-
-const number = (value: unknown) => {
-  const parsed = Number(value);
-  if (!Number.isFinite(parsed)) throw new Error("Databricks returned an invalid numeric value");
-  return parsed;
-};
-
-const nullableNumber = (value: unknown) => {
-  if (value == null || value === "") return null;
-  return number(value);
-};
 
 const text = (value: unknown) => String(value ?? "");
 const month = (value: unknown) => text(value).slice(0, 7);

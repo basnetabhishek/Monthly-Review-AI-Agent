@@ -16,7 +16,7 @@ export function ReportView({ report }: { report: ReportResponse }) {
         <div className="card kpi"><label>Profit margin</label><strong>{c.margin.toFixed(1)}%</strong><span>{fmt(c.units)} units sold</span></div>
       </div>
       <div className="heroGrid">
-        <div className="card"><div className="cardTitle"><div><small>4-MONTH VIEW</small><h3>Sales trajectory</h3></div><b>{fmt(c.sales)}</b></div><div className="bars">{report.trend.map((item) => <div key={item.month} style={{ height: `${Math.max((item.sales / max) * 100, 5)}%` }} title={`${formatReportMonth(item.month)}: ${fmt(item.sales)}`} />)}</div><div className="axis"><span>{formatReportMonth(report.trend[0].month)}</span><span>{formatReportMonth(report.trend.at(-1)!.month)}</span></div></div>
+        <div className="card"><div className="cardTitle"><div><small>{report.trend.length}-MONTH VIEW</small><h3>Sales trajectory</h3></div><b>{fmt(c.sales)}</b></div><div className="bars">{report.trend.map((item) => <div key={item.month} style={{ height: `${Math.max((item.sales / max) * 100, 5)}%` }} title={`${formatReportMonth(item.month)}: ${fmt(item.sales)}`} />)}</div><div className="axis"><span>{formatReportMonth(report.trend[0].month)}</span><span>{formatReportMonth(report.trend.at(-1)!.month)}</span></div></div>
         <article className="card summary"><small>EXECUTIVE SUMMARY · {report.narrativeMode === "openai" ? "OPENAI" : "CONTROLLED FALLBACK"}</small><p>{report.summary}</p><footer>{report.dataSource === "databricks-live" ? "Every number was queried from governed Databricks views." : "Every number is sourced from the validated KPI snapshot."}</footer></article>
       </div>
       <div className="tables">

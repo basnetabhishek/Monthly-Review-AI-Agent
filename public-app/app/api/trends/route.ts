@@ -20,18 +20,21 @@ export async function GET() {
     }
   }
 
-  const points = reportData.trend.map((item, index) => ({
-    month: item.month,
-    sales: item.sales,
-    profit: index === reportData.trend.length - 1 ? reportData.current.profit : 0,
-    margin: index === reportData.trend.length - 1 ? reportData.current.margin : 0,
-    orders: index === reportData.trend.length - 1 ? reportData.current.orders : 0,
-    units: index === reportData.trend.length - 1 ? reportData.current.units : 0,
-    negativeOrders: index === reportData.trend.length - 1 ? reportData.current.negativeOrders : 0,
-    salesMom: index === reportData.trend.length - 1 ? reportData.current.salesMom : null,
-    profitMom: index === reportData.trend.length - 1 ? reportData.current.profitMom : null,
-    ordersMom: index === reportData.trend.length - 1 ? reportData.current.ordersMom : null,
-  }));
+  // The snapshot only validates the final month's full KPI set.
+  // Earlier fallback sales figures do not include validated profit, margin,
+  // or order data, so do not fabricate those values as zeros.
+  const points = [{
+    month: reportData.reportMonth,
+    sales: reportData.current.sales,
+    profit: reportData.current.profit,
+    margin: reportData.current.margin,
+    orders: reportData.current.orders,
+    units: reportData.current.units,
+    negativeOrders: reportData.current.negativeOrders,
+    salesMom: reportData.current.salesMom,
+    profitMom: reportData.current.profitMom,
+    ordersMom: reportData.current.ordersMom,
+  }];
 
   return Response.json({ points, dataSource: "validated-snapshot" });
 }

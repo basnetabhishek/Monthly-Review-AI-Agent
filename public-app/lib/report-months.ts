@@ -34,12 +34,9 @@ export function formatReportMonth(value: string) {
 }
 
 export function fallbackMonthOptions(): MonthOption[] {
-  const months: MonthOption[] = [];
-  for (let offset = 0; offset < 48; offset += 1) {
-    const value = shiftReportMonth(DISPLAY_END_MONTH, -offset);
-    months.push({ value, label: formatReportMonth(value) });
-  }
-  return months;
+  // Only the latest month has a complete validated offline KPI snapshot.
+  // Do not offer historical months that the fallback report endpoint cannot serve.
+  return [{ value: DISPLAY_END_MONTH, label: formatReportMonth(DISPLAY_END_MONTH) }];
 }
 
 export function isSupportedReportMonth(value: unknown): value is string {
